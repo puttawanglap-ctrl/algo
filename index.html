@@ -6,6 +6,7 @@
     <title>Algorithm Adventure World 🤖🧠🚀</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;800&display=swap" rel="stylesheet">
@@ -19,6 +20,32 @@
             background: linear-gradient(135deg, #e0f2fe 0%, #fae8ff 100%);
         }
         
+        /* Custom SweetAlert2 Styling to match kid theme */
+        .swal2-popup {
+            font-family: 'Prompt', sans-serif !important;
+            border-radius: 28px !important;
+            border: 4px solid #fbcfe8 !important; /* Pink Border */
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1) !important;
+        }
+        .swal2-title {
+            font-weight: 800 !important;
+            color: #334155 !important;
+        }
+        .swal2-html-container {
+            font-weight: 600 !important;
+            color: #64748b !important;
+        }
+        .swal2-confirm {
+            border-radius: 16px !important;
+            padding: 12px 32px !important;
+            font-weight: 800 !important;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+        }
+        .swal2-cancel {
+            border-radius: 16px !important;
+            font-weight: 600 !important;
+        }
+
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-12px) rotate(2deg); }
@@ -45,10 +72,7 @@
         .pulse-glow { animation: pulse-glow 2s infinite; }
         
         ::-webkit-scrollbar { display: none; }
-        
-        .btn-active-scale:active {
-            transform: scale(0.92);
-        }
+        .btn-active-scale:active { transform: scale(0.92); }
 
         @media print {
             body * { visibility: hidden; }
@@ -187,7 +211,6 @@
             </div>
 
             <div class="space-y-3 px-1 max-h-[60vh] overflow-y-auto py-2">
-                
                 <button onclick="startWorld(1)" class="w-full bg-white rounded-2xl p-4 shadow-md border-l-8 border-amber-400 flex items-center justify-between text-left btn-active-scale relative overflow-hidden">
                     <div class="flex items-center space-x-3">
                         <span class="text-4xl bg-amber-50 p-2 rounded-xl">🍞</span>
@@ -317,8 +340,7 @@
                                     <th class="p-1.5 border-b font-bold">เวลาเล่น</th>
                                 </tr>
                             </thead>
-                            <tbody id="teacher-student-rows">
-                                </tbody>
+                            <tbody id="teacher-student-rows"></tbody>
                         </table>
                     </div>
                 </div>
@@ -339,17 +361,13 @@
                 <div class="text-5xl">🏆</div>
                 <h2 class="text-2xl font-extrabold text-amber-600 uppercase tracking-widest mt-1">ใบประกาศนียบัตรเกียรติคุณ</h2>
                 <p class="text-xs font-bold text-slate-400 tracking-wider">ALGORITHM ADVENTURE WORLD CERTIFICATE</p>
-                
                 <div class="w-16 h-0.5 bg-amber-200 my-2"></div>
-                
                 <p class="text-xs text-slate-500">ขอมอบใบประกาศฉบับนี้เพื่อแสดงว่า</p>
                 <h3 id="cert-student-name" class="text-xl font-extrabold text-slate-800 border-b-2 border-dashed border-slate-300 px-4 pb-1">น้องพอใจ เรียนดี</h3>
                 <p id="cert-student-class" class="text-xs font-bold text-purple-600">ระดับชั้นประถมศึกษาปีที่ 3/1 เลขที่ 5</p>
-                
                 <p class="text-xs text-slate-500 px-4 mt-2 max-w-xs leading-relaxed">
                     ได้ผ่านการเรียนรู้กระบวนการแก้ปัญหาอย่างเป็นระบบ การเรียงลำดับเชิงตรรกะ และการเขียนโปรแกรมควบคุมหุ่นยนต์เบื้องต้นได้อย่างยอดเยี่ยมระดับเหรียญทองมาสเตอร์
                 </p>
-
                 <div class="w-full pt-4 flex justify-between items-center px-4 text-[10px] text-slate-400 font-medium">
                     <div>
                         <p>คะแนนรวมที่สะสมได้: <span id="cert-score" class="font-bold text-amber-500">⭐ 250 ดาว</span></p>
@@ -361,7 +379,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="window.print()" class="bg-indigo-500 text-white font-extrabold py-3 rounded-xl shadow btn-active-scale text-sm">
                     🖨️ สั่งพิมพ์ / บันทึก PDF
@@ -432,28 +449,20 @@
             ctx: null,
             init() {
                 if (!this.ctx) {
-                    try {
-                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    } catch(e) { console.log("Web Audio not supported"); }
+                    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
                 }
-                if (this.ctx && this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
             },
             playTone(freq, type, duration) {
-                this.init();
-                if(!this.ctx) return;
+                this.init(); if(!this.ctx) return;
                 try {
                     let osc = this.ctx.createOscillator();
                     let gain = this.ctx.createGain();
-                    osc.type = type;
-                    osc.frequency.value = freq;
+                    osc.type = type; osc.frequency.value = freq;
                     gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + duration);
                 } catch(e) {}
             },
             playClick() { this.playTone(600, 'sine', 0.08); },
@@ -483,16 +492,10 @@
             }, 1000);
         }
 
-        function saveProgressToStorage() {
-            localStorage.setItem('algo_adventure_profile', JSON.stringify(studentProfile));
-        }
-
+        function saveProgressToStorage() { localStorage.setItem('algo_adventure_profile', JSON.stringify(studentProfile)); }
         function loadProgressFromStorage() {
             const data = localStorage.getItem('algo_adventure_profile');
-            if(data) {
-                studentProfile = JSON.parse(data);
-                updateTopHeaderUI();
-            }
+            if(data) { studentProfile = JSON.parse(data); updateTopHeaderUI(); }
         }
 
         function updateTopHeaderUI() {
@@ -501,120 +504,84 @@
             document.getElementById('user-info-display').innerText = `${studentProfile.grade} เลขที่ ${studentProfile.number}`;
             document.getElementById('header-stars').innerText = studentProfile.stars;
             document.getElementById('header-coins').innerText = studentProfile.coins;
-            
             if(studentProfile.completedWorlds.length >= 3 || studentProfile.stars >= 100) {
                 document.getElementById('claim-cert-btn').classList.remove('hidden');
             }
         }
 
-        function openModal(id) {
-            AudioEngine.playClick();
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'modal-leaderboard') renderLeaderboard();
-        }
-
-        function closeModal(id) {
-            AudioEngine.playClick();
-            document.getElementById(id).classList.add('hidden');
-        }
+        function openModal(id) { AudioEngine.playClick(); document.getElementById(id).classList.remove('hidden'); if(id === 'modal-leaderboard') renderLeaderboard(); }
+        function closeModal(id) { AudioEngine.playClick(); document.getElementById(id).classList.add('hidden'); }
 
         function goToScreen(screenId) {
             AudioEngine.playClick();
             const screens = ['welcome', 'register', 'world-map', 'gameplay', 'teacher', 'certificate'];
             screens.forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
             document.getElementById(`screen-${screenId}`).classList.remove('hidden');
-            
-            const topBar = document.getElementById('top-bar');
             if(['welcome', 'register', 'certificate'].includes(screenId)) {
-                topBar.classList.add('hidden');
+                document.getElementById('top-bar').classList.add('hidden');
             } else {
-                topBar.classList.remove('hidden');
+                document.getElementById('top-bar').classList.remove('hidden');
             }
         }
 
         function claimDailyReward() { openModal('modal-daily'); }
         function claimDailyRewardSuccess() {
-            studentProfile.coins += 50;
-            updateTopHeaderUI();
-            closeModal('modal-daily');
-            triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/2);
-            AudioEngine.playSuccess();
+            studentProfile.coins += 50; updateTopHeaderUI(); closeModal('modal-daily');
+            triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/2); AudioEngine.playSuccess();
         }
 
         function renderLeaderboard() {
-            const container = document.getElementById('leaderboard-list');
-            container.innerHTML = '';
+            const container = document.getElementById('leaderboard-list'); container.innerHTML = '';
             let list = [...mockLeaderboard, { name: `${studentProfile.name} (คุณ) ${studentProfile.avatar}`, score: `⭐ ${studentProfile.stars}`, badge: "🏅 ผู้กล้าท้าลอง" }];
             list.sort((a,b) => parseInt(b.score.replace('⭐ ','')) - parseInt(a.score.replace('⭐ ','')));
-            
             list.forEach((u, i) => {
                 container.innerHTML += `
                     <div class="flex items-center justify-between p-2 rounded-xl ${i===0?'bg-yellow-50 border border-yellow-300': 'bg-slate-50'}">
                         <div class="flex items-center space-x-2">
-                            <span class="font-bold text-slate-500 w-4">${i+1}.</span>
-                            <span class="font-semibold text-slate-700">${u.name}</span>
+                            <span class="font-bold text-slate-500 w-4">${i+1}.</span><span class="font-semibold text-slate-700">${u.name}</span>
                         </div>
                         <div class="text-right">
-                            <span class="font-bold text-amber-500 text-xs block">${u.score}</span>
-                            <span class="text-[9px] text-purple-400 font-bold block">${u.badge}</span>
+                            <span class="font-bold text-amber-500 text-xs block">${u.score}</span><span class="text-[9px] text-purple-400 font-bold block">${u.badge}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
         function selectAvatar(icon, btnElement) {
             AudioEngine.playClick();
-            document.querySelectorAll('.avatar-btn').forEach(b => {
-                b.classList.remove('bg-sky-50', 'border-sky-400');
-                b.classList.add('bg-slate-50', 'border-transparent');
-            });
-            btnElement.classList.remove('bg-slate-50', 'border-transparent');
-            btnElement.classList.add('bg-sky-50', 'border-sky-400');
+            document.querySelectorAll('.avatar-btn').forEach(b => { b.classList.remove('bg-sky-50', 'border-sky-400'); b.classList.add('bg-slate-50', 'border-transparent'); });
+            btnElement.classList.remove('bg-slate-50', 'border-transparent'); btnElement.classList.add('bg-sky-50', 'border-sky-400');
             studentProfile.avatar = icon;
         }
 
         function selectRobot(botName, btnElement) {
             AudioEngine.playClick();
-            document.querySelectorAll('.robot-btn').forEach(b => {
-                b.classList.remove('bg-purple-50', 'border-purple-400');
-                b.classList.add('bg-slate-50', 'border-transparent');
-            });
-            btnElement.classList.remove('bg-slate-50', 'border-transparent');
-            btnElement.classList.add('bg-purple-50', 'border-purple-400');
+            document.querySelectorAll('.robot-btn').forEach(b => { b.classList.remove('bg-purple-50', 'border-purple-400'); b.classList.add('bg-slate-50', 'border-transparent'); });
+            btnElement.classList.remove('bg-slate-50', 'border-transparent'); btnElement.classList.add('bg-purple-50', 'border-purple-400');
             studentProfile.robot = botName;
         }
 
         function submitRegistration() {
             const nameInput = document.getElementById('reg-name').value.trim();
             if(!nameInput) {
-                alert("กรุณาใส่ชื่อสุดน่ารักของคุณก่อนเริ่มเกมนะครับลูก!");
+                Swal.fire({ icon: 'warning', title: 'อุ๊ย! ลืมพิมพ์ชื่อหรือเปล่าครับ?', text: 'กรอกชื่อสุดน่ารักของคุณก่อนเริ่มผจญภัยนะลูก! 👦👧', confirmButtonColor: '#38bdf8', confirmButtonText: 'โอเคเลย!' });
                 return;
             }
             studentProfile.name = nameInput;
             studentProfile.grade = document.getElementById('reg-grade').value;
             studentProfile.number = document.getElementById('reg-number').value || "1";
-            
-            updateTopHeaderUI();
-            saveProgressToStorage();
-            goToScreen('world-map');
-            speakText(`สวัสดีครับน้อง ${studentProfile.name} ยินดีต้อนรับสู่โลก แอลกอริทึม แอดเวนเจอร์ เวิลด์ เลือกดินแดนเพื่อทำภารกิจแก้ปัญหาได้เลยครับ`);
+            updateTopHeaderUI(); saveProgressToStorage(); goToScreen('world-map');
+            speakText(`สวัสดีครับน้อง ${studentProfile.name} ยินดีต้อนรับสู่โลก แอลกอริทึม แอดเวนเจอร์ เวิลด์ เลือกดินแดนได้เลยครับ`);
         }
 
         function speakText(txt) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                let msg = new SpeechSynthesisUtterance(txt);
-                msg.lang = 'th-TH';
-                msg.rate = 1.05;
+                let msg = new SpeechSynthesisUtterance(txt); msg.lang = 'th-TH'; msg.rate = 1.05;
                 window.speechSynthesis.speak(msg);
             }
         }
-
-        function speakInstruction() {
-            const hintText = document.getElementById('hint-text').innerText;
-            speakText(hintText);
-        }
+        function speakInstruction() { speakText(document.getElementById('hint-text').innerText); }
 
         const worldData = {
             1: { title: "โลกที่ 1: ขั้นตอนการทำแซนด์วิชทูน่า 🍞", type: 1, items: [{id: 's4', text:'🥪 ประกบขนมปังคู่เข้าด้วยกัน'}, {id: 's2', text:'🥫 เปิดฝากระป๋องทูน่า'}, {id: 's1', text:'🍞 หยิบแผ่นขนมปังออกจากถุง'}, {id: 's3', text:'🥗 ตักผสมทูน่าใส่ไส้ขนมปัง'}], correctOrder: ['s1','s2','s3','s4'], hint: "วิธีเล่น: กดเลือกกล่องตัวเลือกด้านล่าง แผ่นป้ายจะวิ่งขึ้นไปจัดเรียงที่ช่องว่างด้านบนตามลำดับ 1 ไป 4 จ้า!" },
@@ -625,44 +592,31 @@
         };
 
         function startWorld(worldId) {
-            currentWorld = worldId;
-            currentGameType = worldData[worldId].type;
-            
+            currentWorld = worldId; currentGameType = worldData[worldId].type;
             document.getElementById('current-world-title').innerText = worldData[worldId].title;
             document.getElementById('hint-text').innerText = worldData[worldId].hint;
-            
-            selectedItemsArrangement = [];
-            robotCommandsQueue = [];
-            memoryCardsFlipped = [];
-            
-            buildGameArena();
-            goToScreen('gameplay');
+            selectedItemsArrangement = []; robotCommandsQueue = []; memoryCardsFlipped = [];
+            buildGameArena(); goToScreen('gameplay');
             setTimeout(() => { speakText(worldData[worldId].hint); }, 300);
         }
 
         function showHint() {
-            alert("💡 คำแนะนำสำหรับเด็กๆ: " + worldData[currentWorld].hint);
+            Swal.fire({ icon: 'info', title: '💡 คำแนะนำจากผู้ช่วยอัจฉริยะ', text: worldData[currentWorld].hint, confirmButtonColor: '#fbbf24', confirmButtonText: 'เข้าใจแล้วคุณครูบอต!' });
             speakInstruction();
         }
 
         function buildGameArena() {
-            const arena = document.getElementById('game-arena');
-            arena.innerHTML = '';
-            
+            const arena = document.getElementById('game-arena'); arena.innerHTML = '';
             if(currentGameType === 1) {
                 document.getElementById('current-game-mode').innerText = "🧩 ด่านจัดลำดับกระบวนการคิด (Click-to-Slot)";
                 renderSequencingGame();
             }
             else if(currentGameType === 2) {
                 document.getElementById('current-game-mode').innerText = "🤖 ด่านประกอบบล็อกคำสั่งโค้ดดิ้ง";
-                
                 let html = `<div class="grid grid-cols-4 gap-1 border-4 border-purple-200 rounded-2xl p-1 bg-slate-100 w-64 h-64">`;
                 for(let r=0; r<4; r++) {
                     for(let c=0; c<4; c++) {
-                        let icon = "";
-                        if(r===2 && c===0) icon = "🤖";
-                        if(r===1 && c===3) icon = "⭐";
-                        if((r===0 && c===2) || (r===2 && c===2)) icon = "🧱";
+                        let icon = ""; if(r===2 && c===0) icon = "🤖"; if(r===1 && c===3) icon = "⭐"; if((r===0 && c===2) || (r===2 && c===2)) icon = "🧱";
                         html += `<div id="grid-${c}-${r}" class="bg-white border rounded-lg flex items-center justify-center text-xl font-bold relative">${icon}</div>`;
                     }
                 }
@@ -682,16 +636,13 @@
                 document.getElementById('current-game-mode').innerText = "🃏 ด่านจับคู่การ์ดเงื่อนไขและเหตุผล";
                 let html = `<div class="grid grid-cols-2 gap-3 w-full max-w-xs">`;
                 let cards = [...worldData[currentWorld].items].sort(() => Math.random() - 0.5);
-                
                 cards.forEach((card, i) => {
                     html += `
                         <div onclick="flipMemoryCard('${card.id}', ${i}, this)" class="mem-card h-20 bg-gradient-to-br from-indigo-400 to-purple-400 text-white font-extrabold rounded-xl shadow border-b-4 border-purple-700 flex items-center justify-center text-center p-2 text-xs cursor-pointer btn-active-scale transition-all">
-                            <span class="text-xl card-back-mark">❓</span>
-                            <span class="card-front-content hidden">${card.text}</span>
+                            <span class="text-xl card-back-mark">❓</span><span class="card-front-content hidden">${card.text}</span>
                         </div>`;
                 });
-                html += `</div>`;
-                arena.innerHTML = html;
+                html += `</div>`; arena.innerHTML = html;
             }
             else if(currentGameType === 4) {
                 document.getElementById('current-game-mode').innerText = "👾 ปะทะมอนสเตอร์วายร้าย Bug King!";
@@ -710,12 +661,10 @@
                         </div>
                         <div class="space-y-2">
                             <button onclick="answerBossQuiz(true, this)" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl text-left font-bold text-xs btn-active-scale shadow-sm flex items-center space-x-2">
-                                <span class="bg-sky-100 p-1 rounded">ก</span>
-                                <span>📄 หาแผ่นกระดาษสี่เหลี่ยมผืนผ้าที่เรียบเรียงได้สัดส่วน</span>
+                                <span class="bg-sky-100 p-1 rounded">ก</span><span>📄 หาแผ่นกระดาษสี่เหลี่ยมผืนผ้าที่เรียบเรียงได้สัดส่วน</span>
                             </button>
                             <button onclick="answerBossQuiz(false, this)" class="w-full p-3 bg-white border-2 border-slate-200 rounded-xl text-left font-bold text-xs btn-active-scale shadow-sm flex items-center space-x-2">
-                                <span class="bg-sky-100 p-1 rounded">ข</span>
-                                <span>🚀 ปล่อยจรวดกระดาษออกไปข้างหน้าเพื่อทดลองบิน</span>
+                                <span class="bg-sky-100 p-1 rounded">ข</span><span>🚀 ปล่อยจรวดกระดาษออกไปข้างหน้าเพื่อทดลองบิน</span>
                             </button>
                         </div>
                     </div>`;
@@ -723,14 +672,9 @@
             }
         }
 
-        // --- NEW CLICK TO MOVE SLOT SYSTEM FOR SEQUENCING ---
         function renderSequencingGame() {
-            const arena = document.getElementById('game-arena');
-            let html = `<div class="w-full space-y-4">`;
-            
-            // 1. Top Target Slots
-            html += `<p class="text-xs font-bold text-purple-600 text-center">🎯 ลำดับขั้นตอนของคุณ (1 ➡️ 4)</p>`;
-            html += `<div class="grid grid-cols-4 gap-2">`;
+            const arena = document.getElementById('game-arena'); let html = `<div class="w-full space-y-4">`;
+            html += `<p class="text-xs font-bold text-purple-600 text-center">🎯 ลำดับขั้นตอนของคุณ (1 ➡️ 4)</p><div class="grid grid-cols-4 gap-2">`;
             for(let i=0; i<4; i++) {
                 const itemId = selectedItemsArrangement[i];
                 if(itemId) {
@@ -738,132 +682,81 @@
                     const labelIcon = item.text.substring(0, 2); 
                     html += `
                         <button onclick="removeSequenceItem(${i})" class="h-20 bg-amber-100 border-2 border-amber-400 rounded-xl flex flex-col items-center justify-center font-bold text-xs p-1 shadow btn-active-scale text-center">
-                            <span class="text-2xl block">${labelIcon}</span>
-                            <span class="text-[9px] text-amber-800 font-extrabold block">ลำดับที่ ${i+1}</span>
-                            <span class="text-[8px] text-slate-400 block font-normal">(กดออก)</span>
+                            <span class="text-2xl block">${labelIcon}</span><span class="text-[9px] text-amber-800 font-extrabold block">ลำดับที่ ${i+1}</span><span class="text-[8px] text-slate-400 block font-normal">(กดออก)</span>
                         </button>`;
                 } else {
                     html += `
                         <div class="h-20 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center text-slate-300 font-extrabold text-sm">
-                            <span>${i+1}</span>
-                            <span class="text-[9px] font-normal text-slate-300">ว่าง</span>
+                            <span>${i+1}</span><span class="text-[9px] font-normal text-slate-300">ว่าง</span>
                         </div>`;
                 }
             }
-            html += `</div>`;
-            
-            // 2. Bottom Choices Pool
-            html += `<div class="w-full bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">`;
+            html += `</div><div class="w-full bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">`;
             html += `<p class="text-[11px] font-bold text-slate-400 text-center mb-1">👇 กดที่กล่องเพื่อเลือกเรียงลำดับ</p>`;
-            
             worldData[currentWorld].items.forEach(item => {
                 const isSelected = selectedItemsArrangement.includes(item.id);
                 if(isSelected) {
                     html += `
                         <div class="w-full p-2.5 bg-slate-200 text-slate-400 border-2 border-slate-200 rounded-xl font-medium text-xs flex items-center justify-between opacity-50 select-none">
-                            <span>${item.text}</span>
-                            <span class="text-[10px] bg-slate-300 px-2 py-0.5 rounded-full text-slate-500 font-bold">เลือกแล้ว</span>
+                            <span>${item.text}</span><span class="text-[10px] bg-slate-300 px-2 py-0.5 rounded-full text-slate-500 font-bold">เลือกแล้ว</span>
                         </div>`;
                 } else {
                     html += `
                         <button onclick="addSequenceItem('${item.id}')" class="w-full p-2.5 bg-white hover:bg-sky-50 border-2 border-slate-200 hover:border-sky-300 rounded-xl font-bold text-xs flex items-center justify-between shadow-sm btn-active-scale text-left">
-                            <span>${item.text}</span>
-                            <span class="text-xs text-sky-400">➕ เลือก</span>
+                            <span>${item.text}</span><span class="text-xs text-sky-400">➕ เลือก</span>
                         </button>`;
                 }
             });
-            html += `</div></div>`;
-            arena.innerHTML = html;
+            html += `</div></div>`; arena.innerHTML = html;
         }
 
-        function addSequenceItem(id) {
-            AudioEngine.playClick();
-            if(selectedItemsArrangement.length >= 4) return;
-            selectedItemsArrangement.push(id);
-            renderSequencingGame();
-        }
-
-        function removeSequenceItem(index) {
-            AudioEngine.playClick();
-            selectedItemsArrangement.splice(index, 1);
-            renderSequencingGame();
-        }
+        function addSequenceItem(id) { AudioEngine.playClick(); if(selectedItemsArrangement.length >= 4) return; selectedItemsArrangement.push(id); renderSequencingGame(); }
+        function removeSequenceItem(index) { AudioEngine.playClick(); selectedItemsArrangement.splice(index, 1); renderSequencingGame(); }
 
         function addRobotCommand(symbol) {
             AudioEngine.playClick();
             if(robotCommandsQueue.length >= 6) {
-                alert("กระเป๋าเป้เก็บคำสั่งเต็มแล้วครับเด็กๆ ใส่ได้สูงสุด 6 ขั้นตอนนะ!");
+                Swal.fire({ icon: 'error', title: '🎒 กระเป๋าเต็มแล้วจ้า!', text: 'เป้คำสั่งเก็บได้สูงสุด 6 ขั้นตอนนะเด็กๆ ลองล้างคิวแล้ววางแผนใหม่ดูนะ!', confirmButtonColor: '#f472b6' });
                 return;
             }
-            robotCommandsQueue.push(symbol);
-            document.getElementById('command-queue-text').innerText = robotCommandsQueue.join(' ➡️ ');
+            robotCommandsQueue.push(symbol); document.getElementById('command-queue-text').innerText = robotCommandsQueue.join(' ➡️ ');
         }
-
-        function clearRobotCommands() {
-            AudioEngine.playClick();
-            robotCommandsQueue = [];
-            document.getElementById('command-queue-text').innerText = "ว่างเปล่า";
-        }
+        function clearRobotCommands() { AudioEngine.playClick(); robotCommandsQueue = []; document.getElementById('command-queue-text').innerText = "ว่างเปล่า"; }
 
         function flipMemoryCard(id, idx, cardElement) {
             if (memoryCardsFlipped.length >= 2 || cardElement.classList.contains('bg-emerald-100')) return;
-            
             AudioEngine.playClick();
-            cardElement.querySelector('.card-back-mark').classList.add('hidden');
-            cardElement.querySelector('.card-front-content').classList.remove('hidden');
-            cardElement.classList.remove('from-indigo-400', 'to-purple-400');
-            cardElement.classList.add('bg-white', 'text-purple-700', 'border-purple-300');
-
+            cardElement.querySelector('.card-back-mark').classList.add('hidden'); cardElement.querySelector('.card-front-content').classList.remove('hidden');
+            cardElement.classList.remove('from-indigo-400', 'to-purple-400'); cardElement.classList.add('bg-white', 'text-purple-700', 'border-purple-300');
             memoryCardsFlipped.push({ id: id, index: idx, elem: cardElement });
-
-            if (memoryCardsFlipped.length === 2) {
-                setTimeout(checkMemoryPairMatch, 900);
-            }
+            if (memoryCardsFlipped.length === 2) setTimeout(checkMemoryPairMatch, 900);
         }
 
         function checkMemoryPairMatch() {
-            let p1 = memoryCardsFlipped[0];
-            let p2 = memoryCardsFlipped[1];
-
+            let p1 = memoryCardsFlipped[0]; let p2 = memoryCardsFlipped[1];
             if (p1.id === p2.id && p1.index !== p2.index) {
                 AudioEngine.playSuccess();
-                p1.elem.classList.remove('text-purple-700');
-                p1.elem.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-400');
-                p2.elem.classList.remove('text-purple-700');
-                p2.elem.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-400');
-                
+                p1.elem.classList.remove('text-purple-700'); p1.elem.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-400');
+                p2.elem.classList.remove('text-purple-700'); p2.elem.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-400');
                 triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/2);
-                studentProfile.stars += 15;
-                studentProfile.coins += 10;
-                updateTopHeaderUI();
-                
+                studentProfile.stars += 15; studentProfile.coins += 10; updateTopHeaderUI();
                 const remainingUnmatched = document.querySelectorAll('.card-back-mark:not(.hidden)');
                 if(remainingUnmatched.length === 0) processLevelCompletionVictory();
             } else {
                 AudioEngine.playFail();
-                p1.elem.querySelector('.card-back-mark').classList.remove('hidden');
-                p1.elem.querySelector('.card-front-content').classList.add('hidden');
-                p1.elem.classList.add('from-indigo-400', 'to-purple-400');
-                p1.elem.classList.remove('bg-white', 'text-purple-700', 'border-purple-300');
-
-                p2.elem.querySelector('.card-back-mark').classList.remove('hidden');
-                p2.elem.querySelector('.card-front-content').classList.add('hidden');
-                p2.elem.classList.add('from-indigo-400', 'to-purple-400');
-                p2.elem.classList.remove('bg-white', 'text-purple-700', 'border-purple-300');
+                p1.elem.querySelector('.card-back-mark').classList.remove('hidden'); p1.elem.querySelector('.card-front-content').classList.add('hidden');
+                p1.elem.classList.add('from-indigo-400', 'to-purple-400'); p1.elem.classList.remove('bg-white', 'text-purple-700', 'border-purple-300');
+                p2.elem.querySelector('.card-back-mark').classList.remove('hidden'); p2.elem.querySelector('.card-front-content').classList.add('hidden');
+                p2.elem.classList.add('from-indigo-400', 'to-purple-400'); p2.elem.classList.remove('bg-white', 'text-purple-700', 'border-purple-300');
             }
             memoryCardsFlipped = [];
         }
 
         function answerBossQuiz(isCorrect, btnElement) {
             if(isCorrect) {
-                AudioEngine.playSuccess();
-                bossHP -= 50;
-                document.getElementById('boss-hp-bar').style.width = `${bossHP}%`;
-                btnElement.classList.add('bg-emerald-100', 'border-emerald-400');
-                triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/3);
-                
-                speakText("คำตอบถูกต้อง คาถาโจมตีบอสจอมมารสำเร็จ!");
-                
+                AudioEngine.playSuccess(); bossHP -= 50; document.getElementById('boss-hp-bar').style.width = `${bossHP}%`;
+                btnElement.classList.add('bg-emerald-100', 'border-emerald-400'); triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/3);
+                speakText("คำตอบถูกต้อง คาถาโจมตีบอสสำเร็จ!");
                 if(bossHP <= 0) {
                     setTimeout(() => { processLevelCompletionVictory(); }, 800);
                 } else {
@@ -875,9 +768,8 @@
                     }, 1000);
                 }
             } else {
-                AudioEngine.playFail();
-                btnElement.classList.add('bg-rose-100', 'border-rose-400');
-                speakText("คำตอบยังไม่ถูกต้อง ลองพิจารณาทางเลือกใหม่อีกครั้งนะจ๊ะ!");
+                AudioEngine.playFail(); btnElement.classList.add('bg-rose-100', 'border-rose-400');
+                speakText("คำตอบยังไม่ถูก ลองใหม่อีกครั้งนะจ๊ะ!");
                 setTimeout(() => { btnElement.classList.remove('bg-rose-100', 'border-rose-400'); }, 1000);
             }
         }
@@ -885,91 +777,73 @@
         function checkAnswer() {
             if(currentGameType === 1) {
                 if(selectedItemsArrangement.length < 4) {
-                    alert("กรุณาเลือกเรียงขั้นตอนให้ครบทั้ง 4 ช่องก่อนกดตรวจนะจ๊ะคนเก่ง!");
+                    Swal.fire({ icon: 'info', title: 'ยังเรียงไม่ครบเลยนะ!', text: 'กรุณาเลือกจัดเรียงลำดับขั้นตอนให้ครบทั้ง 4 ช่องก่อนกดส่งตรวจนะจ๊ะคนเก่ง! 🧩', confirmButtonColor: '#a78bfa' });
                     return;
                 }
-                const isCorrect = JSON.stringify(selectedItemsArrangement) === JSON.stringify(worldData[currentWorld].correctOrder);
-                if(isCorrect) processLevelCompletionVictory();
+                if(JSON.stringify(selectedItemsArrangement) === JSON.stringify(worldData[currentWorld].correctOrder)) processLevelCompletionVictory();
                 else handleAnswerFailureFeedback();
             } 
             else if(currentGameType === 2) {
                 if(robotCommandsQueue.length === 0) {
-                    alert("กรุณาป้อนบล็อกลูกศรบอกทิศทางเดินให้เจ้าบอตก่อนกดตรวจคำตอบครับ!");
+                    Swal.fire({ icon: 'info', title: 'ป้อนคำสั่งก่อนสิครับ', text: 'กดปุ่มลูกศรทิศทางบอกทางให้เจ้าหุ่นยนต์เดินไปหากล่องดาวเป้าหมายก่อนนะ 🤖', confirmButtonColor: '#38bdf8' });
                     return;
                 }
                 const rightCount = robotCommandsQueue.filter(x => x === '➡️').length;
                 const forwardCount = robotCommandsQueue.filter(x => x === '⬆️').length;
-                if(rightCount >= 2 && forwardCount >= 1) processLevelCompletionVictory();
-                else handleAnswerFailureFeedback();
+                if(rightCount >= 2 && forwardCount >= 1) processLevelCompletionVictory(); else handleAnswerFailureFeedback();
             }
             else if(currentGameType === 3) {
-                alert("วิธีเคลียร์ด่านนี้คือ: คลิกเปิดจับคู่การ์ดสีเขียวให้ครบทุกใบในหน้าจอได้เลยครับ!");
+                Swal.fire({ icon: 'question', title: 'เคล็ดลับด่านจับคู่การ์ด', text: 'เพียงจิ้มแผ่นการ์ดเพื่อจับคู่ระหว่าง สัญญาณไฟจราจร กับ สิ่งที่ควรปฏิบัติ ให้ถูกต้องครบทุกคู่ก็ผ่านฉลุยเลยครับ!', confirmButtonColor: '#34d399' });
             }
             else if(currentGameType === 4) {
-                alert("เลือกคำตอบข้อที่ถูกที่สุดเพื่อโจมตีบอสใหญ่ให้ชนะเลยลูก!");
+                Swal.fire({ icon: 'question', title: 'ประลองศึกด่านบอสใหญ่', text: 'เลือกตัวเลือก ก หรือ ข ที่เป็นคำตอบคิดวิเคราะห์ที่ถูกต้อง เพื่อยิงลำแสงปราบมอนสเตอร์ได้เลยลูก!', confirmButtonColor: '#rose-400' });
             }
         }
 
         function processLevelCompletionVictory() {
-            AudioEngine.playSuccess();
-            triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/2);
+            AudioEngine.playSuccess(); triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/2);
+            studentProfile.stars += 50; studentProfile.coins += 30;
+            if(!studentProfile.completedWorlds.includes(currentWorld)) studentProfile.completedWorlds.push(currentWorld);
+            updateTopHeaderUI(); saveProgressToStorage();
+            speakText("ยินดีด้วยครับ คุณผ่านดินแดนนี้สำเร็จ รับเหรียญรางวัลแล้วไปต่อเลย!");
             
-            studentProfile.stars += 50;
-            studentProfile.coins += 30;
-            if(!studentProfile.completedWorlds.includes(currentWorld)) {
-                studentProfile.completedWorlds.push(currentWorld);
-            }
-            
-            updateTopHeaderUI();
-            saveProgressToStorage();
-            
-            speakText("ยินดีด้วยครับ คุณตอบได้ถูกต้องและแก้ปัญหาด่านนี้สำเร็จ รับเหรียญรางวัลแล้วไปลุยต่อเลย!");
-            alert("✨ ยอดเยี่ยมกระเทียมเจียว! ✨\nคุณผ่านดินแดนนี้และได้รับโบนัสดาวสะสมเรียบร้อยแล้ว!");
-            goToScreen('world-map');
+            Swal.fire({
+                icon: 'success',
+                title: '🎉 ยอดเยี่ยมกระเทียมเจียว! 🎉',
+                text: 'หนูเก่งมาก! ตอบคำถามตรรกะและผ่านภารกิจดินแดนนี้สำเร็จแล้ว ได้รับดาวเกียรติยศเพิ่มขึ้น!',
+                confirmButtonColor: '#34d399',
+                confirmButtonText: 'ลุยด่านต่อไป 🚀'
+            }).then(() => { goToScreen('world-map'); });
         }
 
         function handleAnswerFailureFeedback() {
-            AudioEngine.playFail();
-            speakText("ขั้นตอนของคุณยังมีจุดผิดพลาดอยู่ ลองกดเอาออกแล้วเรียงลำดับใหม่อีกครั้งนะจ๊ะ!");
-            alert("❌ ลำดับขั้นตอนยังไม่ถูกต้องน้า!\nลองสังเกตเหตุผลความจริง แล้วสลับตำแหน่งแผ่นป้ายใหม่อีกรอบนะจ๊ะ");
+            AudioEngine.playFail(); speakText("ขั้นตอนยังมีจุดผิดพลาดอยู่ ลองคิดใหม่อีกครั้งนะจ๊ะ!");
+            Swal.fire({
+                icon: 'error',
+                title: '❌ อ๊ะ! สลับผิดตำแหน่งนิดนึง',
+                text: 'ลำดับขั้นตอนตามเหตุผลความจริงยังมีจุดผิดพลาดอยู่ ลองแตะเพื่อถอนป้ายออกมาจัดเรียงใหม่อีกรอบนะลูก คนเก่งทำได้อยู่แล้ว!',
+                confirmButtonColor: '#f472b6',
+                confirmButtonText: 'ลองใหม่อีกครั้ง 💪'
+            });
         }
 
         let canvas, ctx, particles = [];
-        function initParticleSystem() {
-            canvas = document.getElementById('effectsCanvas');
-            ctx = canvas.getContext('2d');
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            animateParticles();
-        }
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function initParticleSystem() { canvas = document.getElementById('effectsCanvas'); ctx = canvas.getContext('2d'); resizeCanvas(); window.addEventListener('resize', resizeCanvas); animateParticles(); }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         function triggerSparkleExplosion(x, y) {
             for(let i=0; i<40; i++) {
                 particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8,
-                    size: Math.random() * 6 + 4,
-                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-                    alpha: 1, decay: Math.random() * 0.02 + 0.015
+                    x: x, y: y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, size: Math.random() * 6 + 4,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`, alpha: 1, decay: Math.random() * 0.02 + 0.015
                 });
             }
         }
         function animateParticles() {
             ctx.clearRect(0,0, canvas.width, canvas.height);
             for(let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
+                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
                 if(p.alpha <= 0) { particles.splice(i, 1); continue; }
-                ctx.save();
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                ctx.fill();
-                ctx.restore();
+                ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); ctx.restore();
             }
             requestAnimationFrame(animateParticles);
         }
@@ -979,11 +853,9 @@
         function verifyTeacherPassword() {
             const pwd = document.getElementById('teacher-pwd-input').value;
             if(pwd === "1234") {
-                closeModal('modal-teacher-auth');
-                buildTeacherDashboardView();
-                goToScreen('teacher');
+                closeModal('modal-teacher-auth'); buildTeacherDashboardView(); goToScreen('teacher');
             } else {
-                alert("❌ รหัสผ่านไม่ถูกต้อง! (รหัสคือ 1234)");
+                Swal.fire({ icon: 'error', title: 'รหัสผ่านไม่ถูกต้อง', text: 'กรุณาใส่รหัสผ่านที่ถูกต้องสำหรับเข้าหน้าควบคุมของคุณครู (ค่าเริ่มต้นคือ 1234)', confirmButtonColor: '#6366f1' });
             }
             document.getElementById('teacher-pwd-input').value = '';
         }
@@ -992,11 +864,7 @@
             const tbody = document.getElementById('teacher-student-rows');
             tbody.innerHTML = `
                 <tr class="hover:bg-slate-50 border-b">
-                    <td class="p-1.5 font-bold text-indigo-600">${studentProfile.name} (คุณ)</td>
-                    <td class="p-1.5">${studentProfile.grade}</td>
-                    <td class="p-1.5 font-bold text-amber-500">${studentProfile.stars}</td>
-                    <td class="p-1.5">${studentProfile.coins}</td>
-                    <td class="p-1.5">${Math.floor(studentProfile.playTimeSec/60)} นาที ${studentProfile.playTimeSec%60} วิ</td>
+                    <td class="p-1.5 font-bold text-indigo-600">${studentProfile.name} (คุณ)</td><td class="p-1.5">${studentProfile.grade}</td><td class="p-1.5 font-bold text-amber-500">${studentProfile.stars}</td><td class="p-1.5">${studentProfile.coins}</td><td class="p-1.5">${Math.floor(studentProfile.playTimeSec/60)} นาที ${studentProfile.playTimeSec%60} วิ</td>
                 </tr>
                 <tr class="border-b">
                     <td class="p-1.5 text-slate-500">น้องเอมี่ สุดสวย</td><td class="p-1.5">ป.3/1</td><td class="p-1.5 text-slate-500">380</td><td class="p-1.5">240</td><td class="p-1.5">14 นาที</td>
@@ -1012,8 +880,7 @@
                         datasets: [{
                             label: 'อัตราผ่านสำเร็จ (%)',
                             data: [100, 85, 70, studentProfile.completedWorlds.includes(4)?60:45, studentProfile.completedWorlds.includes(5)?40:20],
-                            backgroundColor: ['#fbbf24', '#38bdf8', '#34d399', '#a78bfa', '#f472b6'],
-                            borderRadius: 8
+                            backgroundColor: ['#fbbf24', '#38bdf8', '#34d399', '#a78bfa', '#f472b6'], borderRadius: 8
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
@@ -1022,26 +889,32 @@
         }
 
         function resetAllData() {
-            if(confirm("ต้องการรีเซ็ตข้อมูลทั้งหมดใช่หรือไม่?")) {
-                localStorage.removeItem('algo_adventure_profile');
-                studentProfile = { name: "น้องพอใจ", grade: "ป.3", number: "5", avatar: "👦", robot: "AI Bot 🤖", stars: 0, coins: 0, unlockedWorlds: [1], completedWorlds: [], playTimeSec: 0 };
-                updateTopHeaderUI();
-                buildTeacherDashboardView();
-                alert("รีเซ็ตเรียบร้อยแล้วครับ!");
-            }
+            Swal.fire({
+                title: '⚠️ แน่ใจไหมครับคุณครู?',
+                text: "คะแนน สะสมด่าน และข้อมูลการเรียนทั้งหมดของนักเรียนจะหายวับไปกับตาเลยนะ!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'ใช่, รีเซ็ตข้อมูลทั้งหมดเลย!',
+                cancelButtonText: 'ยกเลิกก่อน'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('algo_adventure_profile');
+                    studentProfile = { name: "น้องพอใจ", grade: "ป.3", number: "5", avatar: "👦", robot: "AI Bot 🤖", stars: 0, coins: 0, unlockedWorlds: [1], completedWorlds: [], playTimeSec: 0 };
+                    updateTopHeaderUI(); buildTeacherDashboardView();
+                    Swal.fire({ icon: 'success', title: 'รีเซ็ตสำเร็จ!', text: 'ล้างประวัติการเล่นและข้อมูลจำลองในเครื่องเรียบร้อยแล้วครับ 🗑️', confirmButtonColor: '#34d399' });
+                }
+            });
         }
-        function addNewMockQuestion() { alert("เพิ่มโจทย์จำลองในคลังข้อมูลเรียบร้อย!"); }
+        function addNewMockQuestion() { Swal.fire({ icon: 'success', title: 'เพิ่มข้อมูลสำเร็จ!', text: 'จำลองการแชร์และอัปเดตระบบโจทย์ในคลังห้องเรียนสำเร็จแล้ว!', confirmButtonColor: '#34d399' }); }
 
         function generateCertificate() {
             document.getElementById('cert-student-name').innerText = studentProfile.name;
             document.getElementById('cert-student-class').innerText = `ระดับชั้นประถมศึกษาปีที่ ${studentProfile.grade} เลขที่ ${studentProfile.number}`;
             document.getElementById('cert-score').innerText = `⭐ ${studentProfile.stars} ดาวสะสม`;
-            
-            const now = new Date();
-            document.getElementById('cert-date').innerText = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()}`;
-            
-            goToScreen('certificate');
-            triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/3);
+            const now = new Date(); document.getElementById('cert-date').innerText = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()}`;
+            goToScreen('certificate'); triggerSparkleExplosion(window.innerWidth/2, window.innerHeight/3);
         }
     </script>
 </body>
